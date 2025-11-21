@@ -93,7 +93,7 @@ const renderBooks = () => {
             <div class="card h-100">
                 ${imageTag}
                 <div class="card-body text-center">
-                    <h6 class="card-title">${book.tenSach}</h6>
+                    <h6 class="card-title " style="height:2rem;">${book.tenSach}</h6>
                     <p class="card-text text-danger">${book.giaBan.toLocaleString('vi-VN')} VNĐ</p>
                     <button class="btn btn-success btn-sm mt-2" onclick="openOrderModal('${book.maSach}')">
                         Thanh toán
@@ -232,6 +232,21 @@ payOrderBtn.addEventListener("click", async () => {
     }
 });
 
+// Xử lý tìm kiếm 
 
-
+document.getElementById("search").addEventListener("click" , searchBooks);
+document.getElementById("textSearch").addEventListener("keyup" , (e)=>{
+    if(e.key === "Enter") searchBooks();
+});
+function searchBooks () {
+    const keyWord = document.getElementById("textSearch").value.trim().toLowerCase();
+    if (keyWord === null){
+         filteredBooks = [...books];
+    }else{
+        filteredBooks = books.filter(book => book.tenSach.toLowerCase().includes(keyWord));
+    }
+    currentPage = 1;
+    renderBooks();
+    renderPagination();
+};
 document.addEventListener("DOMContentLoaded", loadBooks);

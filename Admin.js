@@ -26,10 +26,11 @@ let editingBookId = null;
 let editingOrderId = null;
 let detailIndex = 0; 
 let availableBooks = []; 
+let fillterBook = [];
+let availableOrders = []; 
+let filteredOrders=[];
 
-// =======================================================
 //                  HÀM HỖ TRỢ CHUNG
-// =======================================================
 
 const getBaseUrl = () => {
     const url = new URL(apiBookUrl);
@@ -57,10 +58,18 @@ const fetchAvailableBooks = async () => {
         console.error("Failed to fetch available books for order details:", error);
     }
 };
+const fetchAvailableOrders = async () => {
+    try {
+        const { data: orders } = await axios.get(apiOrderUrl, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        availableOrders = orders; 
+    } catch (error) {
+        console.error("Failed to fetch available books for order details:", error);
+    }
+};
 
-// =======================================================
 //                    QUẢN LÝ SÁCH
-// =======================================================
 
 const handleBookDoubleClick = async (maSach) => {
     try {
@@ -120,7 +129,7 @@ const LoadBook = async () => {
 
        
         const totalItems = books.length;
-        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        totalPages = Math.ceil(totalItems / itemsPerPage);
 
         if (currentPage > totalPages) currentPage = totalPages;
 
@@ -136,7 +145,7 @@ const LoadBook = async () => {
             ).join("");
         }
 
-        
+       
         renderBookPagination(totalPages);
 
     } catch (error) {
@@ -248,10 +257,48 @@ const deleteBook = async (maSach) => {
     }
 };
 
+document.getElementById("searchBook").addEventListener("click",searchBookAdmin);
+document.getElementById("textSearchBook").addEventListener("keyup",(e) => {
+    if(e.key === "Enter") searchBookAdmin();
+});
+function searchBookAdmin() {
+    const keyword = document.getElementById("textSearchBook").value.trim().toLowerCase();
 
-// =======================================================
+    if (keyword === "") {
+        fillterBook = [...availableBooks]; 
+    } else {
+        fillterBook = availableBooks.filter(book =>
+            book.tenSach.toLowerCase().includes(keyword)
+        );
+    }
+
+   
+    currentPage = 1;
+
+   
+    renderBookSearchResult();
+}
+function renderBookSearchResult() {
+    const totalItems = fillterBook.length;
+    totalPages = Math.ceil(totalItems / itemsPerPage);
+
+    if (currentPage > totalPages) currentPage = totalPages || 1;
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+
+    const booksToShow = fillterBook.slice(startIndex, endIndex);
+
+    BookTable.innerHTML = booksToShow.map((book, index) =>
+        createBookRow(book, startIndex + index)
+    ).join("");
+
+    renderBookPagination(totalPages);
+}
+
+
+
 //                    QUẢN LÝ HÓA ĐƠN
-// =======================================================
 
 
 const handleOrderDoubleClick = async (maHoaDon) => {
@@ -324,11 +371,21 @@ const LoadOrder = async () => {
         const { data: orders } = await axios.get(apiOrderUrl, {
             headers: { Authorization: `Bearer ${token}` }
         });
-        
+        availableOrders = orders; 
+         filteredOrders = [...availableOrders]; 
+        const totalItems = orders.length;
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+        if (currentPage > totalPages) currentPage = totalPages;
+
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+
+        const ordersToShow = orders.slice(startIndex, endIndex);
  
         await fetchAvailableBooks(); 
 
-        if (OrderTable) OrderTable.innerHTML = orders.map((order, index) => `
+        if (OrderTable) OrderTable.innerHTML = ordersToShow.map((order, index) => `
             <tr>
                 <td>${index + 1}</td>
                 <td ondblclick="handleOrderDoubleClick('${order.maHoaDon}')" style="cursor: pointer; ">
@@ -342,12 +399,49 @@ const LoadOrder = async () => {
                 </td>
             </tr>
         `).join("");
+
+        renderOrderPagination(totalPages);
     } catch (error) {
         console.error("Failed to load orders:", error);
     }
 };
 
+const renderOrderPagination = (totalPages) => {
+    const pagination = document.getElementById("orderPagination");
+    if (!pagination) return;
 
+    let html = "";
+
+   
+    html += `
+        <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+            <a class="page-link" href="#" onclick="changeOrderPage(${currentPage - 1})">Previous</a>
+        </li>
+    `;
+
+   
+    for (let i = 1; i <= totalPages; i++) {
+        html += `
+            <li class="page-item ${i === currentPage ? 'active' : ''}">
+                <a class="page-link" href="#" onclick="changeOrderPage(${i})">${i}</a>
+            </li>
+        `;
+    }
+
+   
+    html += `
+        <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+            <a class="page-link" href="#" onclick="changeOrderPage(${currentPage + 1})">Next</a>
+        </li>
+    `;
+
+    pagination.innerHTML = html;
+};
+
+// const  changeOrderPage = (page) => {
+//     currentPage = page;
+//     LoadOrder();
+// }
 const addBookToOrder = (maSachSelected = '', soLuong = 1) => {
     const container = document.getElementById("orderDetailsContainer");
     
@@ -472,12 +566,82 @@ async function deleteOrder(maHoaDon) {
     }
 }
 
+document.getElementById("searchOrder").addEventListener("click",searchOrderAdmin);
+document.getElementById("textSearchOrder").addEventListener("keyup",(e) => {
+    if(e.key === "Enter") searchOrderAdmin();
+});
 
-// =======================================================
+function searchOrderAdmin() {
+    const keyword = document.getElementById("textSearchOrder").value.trim().toLowerCase();
+
+  
+    if (keyword === "") {
+        filteredOrders = [...availableOrders];
+    } 
+    else {
+                filteredOrders = availableOrders.filter(order =>
+                order.maHoaDon.toLowerCase().includes(keyword) ||
+                (order.username && order.username.toLowerCase().includes(keyword)));
+    
+    }
+
+    
+    currentPage = 1;
+   
+    renderOrderSearchResult(); 
+}
+
+function createOrderRow(order, index) {
+    return `
+        <tr>
+            <td>${index + 1}</td>
+            <td ondblclick="handleOrderDoubleClick('${order.maHoaDon}')" style="cursor: pointer; ">
+                ${order.maHoaDon}
+            </td>
+            <td>${new Date(order.ngayTao).toLocaleString('vi-VN')}</td>
+             <td>
+                <button class="btn btn-danger btn-sm" onclick="deleteOrder('${order.maHoaDon}')">Delete</button>
+                <button class="btn btn-secondary btn-sm ms-2" onclick="updateOrder('${order.maHoaDon}')">Update</button>
+            </td>
+        </tr>
+    `;
+}
+
+function renderOrderSearchResult() {
+    const totalItems = filteredOrders.length;
+    let totalPages = Math.ceil(totalItems / itemsPerPage);
+
+    if (currentPage > totalPages) currentPage = totalPages || 1;
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+
+    const ordersToShow = filteredOrders.slice(startIndex, endIndex);
+
+    if (OrderTable) {
+        OrderTable.innerHTML = ordersToShow.map((order, index) =>
+            createOrderRow(order, startIndex + index)
+        ).join("");
+    }
+    
+    
+    renderOrderPagination(totalPages);
+}
+
+
+const changeOrderPage = (page) => {
+     currentPage = page;
+ 
+     if (document.getElementById("textSearchOrder").value.trim() !== "" || filteredOrders.length > 0) {
+        renderOrderSearchResult();
+    } else {
+        LoadOrder(); 
+    }
+}
+
 //                    LOGIC CHUNG
-// =======================================================
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   
     OrderTable = document.getElementById("OrderTable");
     BookTable = document.getElementById("BookTable");
@@ -486,6 +650,11 @@ document.addEventListener("DOMContentLoaded", () => {
     modalSaveBtn = document.getElementById("modalSaveBtn");
     Bookform = document.getElementById("bookForm");
     
+    await fetchAvailableBooks();
+    fillterBook = [...availableBooks];
+    LoadBook();
+    await fetchAvailableOrders(); 
+    filteredOrders = [...availableOrders]; 
    
     OrderModal = new bootstrap.Modal(document.getElementById("OrderModal"));
     ModalTitleOrder = document.getElementById("modalTitleOrder");
@@ -662,7 +831,14 @@ document.addEventListener("DOMContentLoaded", () => {
    
     showModule("books");
 });
+const logout = ()=>{
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
 
+    window.location.href="Login.html";
+}
+document.getElementById("Logout").addEventListener("click",logout);
+document.getElementById("Logout2").addEventListener("click",logout);
 function showModule(module) {
     const booksModule = document.getElementById("booksModule");
     const ordersModule = document.getElementById("ordersModule");
