@@ -10,14 +10,14 @@
 
 <body>
     <div class="d-flex justify-content-center align-items-center" style="min-height: 100vh;">
-        <div class="container rounded-2 shadow" style="background-color: rgb(136, 229, 128)">
+        <div class="container rounded-2 shadow" style="background-color: rgb(136, 229, 128) ;width: 700px; ">
             <div id="loginDiv">
                 <h3 class="text-center pt-2 text-success fs-2 fw-semibold">Login</h3>
-                <div class="pt-5 pb-2 text-center">
-                    <input id="loginUsername" placeholder="Username" class="w-75 rounded-1 border-0 mb-3"
-                        style="height: 2rem" />
+                <div class="pt-3 pb-2 text-center">
+                    <input id="loginUsername" placeholder="Username" class="form-control mb-2"
+                         />
                     <input id="loginPassword" type="password" placeholder="Password"
-                        class="w-75 rounded-1 border-0 mb-2" style="height: 2rem" />
+                        class="form-control mb-2"  />
                 </div>
                 <div class="text-center pb-3">
                     <button id="loginBtn" class="btn btn-primary mb-2">Login</button>
@@ -26,20 +26,27 @@
                     </button>
                 </div>
             </div>
-            <div id="registerDiv" style="display: none">
-                <h3>Register</h3>
+            <div id="registerDiv" style="display: none " >
+                <h3 class="text-center pt-2 pb-2 text-success fs-2 fw-semibold">Register</h3>
                 <div id="userNameError" class="text-danger mb-2" style="font-size: 0.9em"></div>
                 <input id="regUsername" placeholder="Username" class="form-control mb-2" />
                 <div id="userPasswordError" class="text-danger mb-2" style="font-size: 0.9em"></div>
                 <input id="regPassword" type="password" placeholder="Password" class="form-control mb-2" />
                 <div id="userRoleError" class="text-danger mb-2" style="font-size: 0.9em"></div>
-                <input id="regRole" placeholder="Role" class="form-control mb-2" />
-                <button id="registerBtn" class="btn btn-success mb-2">
-                    Register
-                </button>
-                <button id="backLogin" class="btn btn-secondary mb-2">
-                    Back to Login
-                </button>
+               <select id="regRole" class="form-control mb-2">
+                    <option value="">-- Select Role --</option>
+                    <option value="0">Admin</option>
+                    <option value="1">Customer</option>
+                </select>
+
+               <div class="text-center">
+                    <button id="registerBtn" class="btn btn-success mb-2">
+                        Register
+                    </button>
+                    <button id="backLogin" class="btn btn-secondary mb-2">
+                        Back to Login
+                    </button>
+               </div>
             </div>
         </div>
     </div>

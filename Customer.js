@@ -141,5 +141,13 @@ const renderPagination = () => {
     });
 };
 
+const logout = ()=>{
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+
+    window.location.href="Login.html";
+}
+document.getElementById("Logout").addEventListener("click",logout);
+
 
 document.addEventListener("DOMContentLoaded", loadBooks);
