@@ -95,9 +95,13 @@ const renderBooks = () => {
                 <div class="card-body text-center">
                     <h6 class="card-title">${book.tenSach}</h6>
                     <p class="card-text text-danger">${book.giaBan.toLocaleString('vi-VN')} VNĐ</p>
+                    <button class="btn btn-success btn-sm mt-2" onclick="openOrderModal('${book.maSach}')">
+                        Thanh toán
+                    </button>
                 </div>
             </div>
         `;
+
         container.appendChild(card);
     });
 };
@@ -148,6 +152,86 @@ const logout = ()=>{
     window.location.href="Login.html";
 }
 document.getElementById("Logout").addEventListener("click",logout);
+
+// Phần xử lý thanh toán
+
+let currentBook = null;
+const OrderModalCustomer = new bootstrap.Modal(document.getElementById("OrderModalCustomer"));
+const orderBookName = document.getElementById("orderBookName");
+const orderBookPrice = document.getElementById("orderBookPrice");
+const orderBookQuantity = document.getElementById("orderBookQuantity");
+const orderTotalPrice = document.getElementById("orderTotalPrice");
+const payOrderBtn = document.getElementById("payOrderBtn");
+
+function openOrderModal(maSach) {
+    const book = books.find(b => b.maSach === maSach);
+    if (!book) return;
+
+    currentBook = book;
+    orderBookName.innerText = book.tenSach;
+    orderBookPrice.innerText = book.giaBan.toLocaleString('vi-VN') + ' VNĐ';
+    orderBookQuantity.value = 1;
+    orderTotalPrice.innerText = book.giaBan.toLocaleString('vi-VN') + ' VNĐ';
+
+    OrderModalCustomer.show();
+}
+
+
+orderBookQuantity.addEventListener("input", () => {
+    if (!currentBook) return;
+    let qty = parseInt(orderBookQuantity.value) || 1;
+    let total = currentBook.giaBan * qty;
+    orderTotalPrice.innerText = total.toLocaleString('vi-VN') + ' VNĐ';
+});
+
+function getUsernameFromToken(token) {
+    if (!token) return null;
+    const payloadBase64 = token.split('.')[1];
+    const payload = JSON.parse(atob(payloadBase64));
+    return payload.unique_name || payload.username || payload.sub; 
+}
+
+
+payOrderBtn.addEventListener("click", async () => {
+    if (!currentBook) return;
+
+    const quantity = parseInt(orderBookQuantity.value) || 1;
+    const username = getUsernameFromToken(localStorage.getItem("token"));
+
+    const orderData = {
+        NgayTao: new Date().toISOString(),
+        Username: username, 
+        HoaDon_Saches: [
+            { MaSach: currentBook.maSach, SoLuong: quantity }
+        ]
+    };
+
+    try {
+        await axios.post("https://localhost:7244/api/HoaDon", orderData, {
+            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+        });
+
+        Swal.fire({
+            icon: "success",
+            title: "Thành công",
+            text: "Đơn hàng đã được lưu!",
+            toast: true,
+            position: "bottom-end",
+            timer: 2000,
+            showConfirmButton: false
+        });
+
+        OrderModalCustomer.hide();
+    } catch (err) {
+        console.error(err);
+        Swal.fire({
+            icon: "error",
+            title: "Lỗi",
+            text: "Không thể lưu đơn hàng. Vui lòng thử lại."
+        });
+    }
+});
+
 
 
 document.addEventListener("DOMContentLoaded", loadBooks);
