@@ -268,7 +268,7 @@ function searchBookAdmin() {
         fillterBook = [...availableBooks]; 
     } else {
         fillterBook = availableBooks.filter(book =>
-            book.tenSach.toLowerCase().includes(keyword)
+            book.tenSach.toLowerCase().includes(keyword) || book.theLoai.toLowerCase().includes(keyword)
         );
     }
 
