@@ -207,18 +207,18 @@ const updateBook = async (maSach) => {
         Bookform.TenTacGia.value = book.tenTacGia;
         Bookform.NoiDungSach.value = book.noiDungSach;
         
-            const previewImg = document.getElementById("previewImage");
-            const fullImageUrl = getFullImageUrl(book.imageUrl);
-            
-            if (previewImg) {
-                if (fullImageUrl) {
-                    previewImg.src = fullImageUrl;
-                    previewImg.style.display = "block";
-                } else {
-                    previewImg.src = "#";
-                    previewImg.style.display = "none";
-                }
+        const previewImg = document.getElementById("previewImage");
+        const fullImageUrl = getFullImageUrl(book.imageUrl);
+        
+        if (previewImg) {
+            if (fullImageUrl) {
+                previewImg.src = fullImageUrl;
+                previewImg.style.display = "block";
+            } else {
+                previewImg.src = "#";
+                previewImg.style.display = "none";
             }
+        }
 
         BookModal.show();
     } catch (error) {
@@ -227,6 +227,7 @@ const updateBook = async (maSach) => {
             title: "Error",
             text: "Loi lay du lieu theo ma sach!",
             timer: 1500,
+            timerProgressBar:true,
             showConfirmButton: false
         });
     }
@@ -248,11 +249,11 @@ const deleteBook = async (maSach) => {
         });
         LoadBook();
         Swal.fire({
-            title: "Success", text: "Delete Thanh Cong", icon: "success", toast: true, position: "bottom-end", timer: 2000, showConfirmButton: false
+            title: "Success", text: "Delete Thanh Cong", icon: "success", toast: true, position: "bottom-end", timer: 2000,timerProgressBar:true, showConfirmButton: false
         });
     } catch (error) {
         Swal.fire({
-            title: "Error", text: "Loi Khi Xoa", icon: "error", toast: true, position: "bottom-end", timer: 2000, showConfirmButton: false
+            title: "Error", text: "Loi Khi Xoa", icon: "error", toast: true, position: "bottom-end", timer: 2000,timerProgressBar:true, showConfirmButton: false
         });
     }
 };
@@ -438,10 +439,7 @@ const renderOrderPagination = (totalPages) => {
     pagination.innerHTML = html;
 };
 
-// const  changeOrderPage = (page) => {
-//     currentPage = page;
-//     LoadOrder();
-// }
+
 const addBookToOrder = (maSachSelected = '', soLuong = 1) => {
     const container = document.getElementById("orderDetailsContainer");
     
@@ -532,6 +530,7 @@ const updateOrder = async (maHoaDon) => {
             title: "Error",
             text: "Lỗi lấy dữ liệu hóa đơn để sửa! (Kiểm tra API C#)",
             timer: 1500,
+            timerProgressBar:true,
             showConfirmButton: false
         });
     }
@@ -556,12 +555,12 @@ async function deleteOrder(maHoaDon) {
         });
         LoadOrder();
         Swal.fire({
-            title: "Success", text: "Xóa thành công", icon: "success", toast: true, position: "bottom-end", timer: 2000, showConfirmButton: false
+            title: "Success", text: "Xóa thành công", icon: "success", toast: true, position: "bottom-end", timer: 2000,timerProgressBar:true, showConfirmButton: false
         });
     } catch (error) {
          console.error("Lỗi khi xóa đơn hàng:", error.response ? error.response.data : error.message);
         Swal.fire({
-            title: "Error", text: "Lỗi Khi Xóa (Kiểm tra ràng buộc dữ liệu)", icon: "error", toast: true, position: "bottom-end", timer: 2000, showConfirmButton: false
+            title: "Error", text: "Lỗi Khi Xóa (Kiểm tra ràng buộc dữ liệu)", icon: "error", toast: true, position: "bottom-end", timer: 2000,timerProgressBar:true, showConfirmButton: false
         });
     }
 }
@@ -698,7 +697,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     "Content-Type": "multipart/form-data"
                 }
             });
-            Swal.fire({ title: "Success", text: "Update Thành Công", icon: "success", toast: true, position: "bottom-end", timer: 2000 ,showConfirmButton: false});
+            Swal.fire({ title: "Success", text: "Update Thành Công", icon: "success", toast: true, position: "bottom-end", timer: 2000 ,timerProgressBar:true,showConfirmButton: false});
         } else {
             await axios.post(apiBookUrl, formData, {
                 headers: {
@@ -706,7 +705,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     "Content-Type": "multipart/form-data"
                 }
             });
-            Swal.fire({ title: "Success", text: "Add Thành Công", icon: "success", toast: true, position: "bottom-end", timer: 2000 ,showConfirmButton: false});
+            Swal.fire({ title: "Success", text: "Add Thành Công", icon: "success", toast: true, position: "bottom-end", timer: 2000 ,timerProgressBar:true,showConfirmButton: false});
         }
 
         BookModal.hide();
@@ -714,7 +713,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     } catch (error) {
         Swal.fire({
-            title: "False", text: "Lưu thất bại", icon: "error", toast: true, timer: 2000
+            title: "False", text: "Lưu thất bại", icon: "error", toast: true, timer: 2000,timerProgressBar:true,
         });
     }
 });
@@ -771,7 +770,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (orderDetails.length === 0) {
             Swal.fire({
-                icon: "warning", text: "Đơn hàng phải có ít nhất một sản phẩm!", toast: true, position: "bottom-end", timer: 2000, showConfirmButton: false
+                icon: "warning", text: "Đơn hàng phải có ít nhất một sản phẩm!", toast: true, position: "bottom-end", timer: 2000,timerProgressBar:true, showConfirmButton: false
             });
             return;
         }
@@ -792,7 +791,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 Swal.fire({
-                    title: "Success", text: "Cập nhật Đơn Hàng Thành Công!", icon: "success", toast: true, position: "bottom-end", timer: 2000, showConfirmButton: false
+                    title: "Success", text: "Cập nhật Đơn Hàng Thành Công!", icon: "success", toast: true, position: "bottom-end", timer: 2000,timerProgressBar:true, showConfirmButton: false
                 });
             } else {
               
@@ -800,7 +799,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 Swal.fire({
-                    title: "Success", text: "Thêm Đơn Hàng Thành Công!", icon: "success", toast: true, position: "bottom-end", timer: 2000, showConfirmButton: false
+                    title: "Success", text: "Thêm Đơn Hàng Thành Công!", icon: "success", toast: true, position: "bottom-end", timer: 2000,timerProgressBar:true, showConfirmButton: false
                 });
             }
             OrderModal.hide();
@@ -808,7 +807,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         } catch (error) {
             console.error("Lỗi khi lưu đơn hàng:", error.response ? error.response.data : error.message);
             Swal.fire({
-                title: "False", text: "Lỗi: Lưu đơn hàng thất bại! (Kiểm tra Mã Sách, API)", icon: "error", toast: true, position: "bottom-end", timer: 2000, showConfirmButton: false
+                title: "False", text: "Lỗi: Lưu đơn hàng thất bại! (Kiểm tra Mã Sách, API)", icon: "error", toast: true, position: "bottom-end", timer: 2000,timerProgressBar:true, showConfirmButton: false
             });
         }
     });

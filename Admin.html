@@ -17,7 +17,10 @@
             background-color: #f8f9fa;
             height: 100vh;
         }
-
+        #sidebar .list-group-item,
+        .offcanvas-body .list-group-item {
+            cursor: pointer;
+        }
         #content {
             width: 80%;
             padding: 20px;
@@ -26,6 +29,8 @@
         #main-container {
             display: flex;
         }
+      
+
         
     </style>
 </head>
@@ -56,7 +61,7 @@
     <div id="main-container">
         <div id="sidebar" class="d-none d-md-block">
             <ul class="list-group list-group-flush">
-                <li class="list-group-item" onclick="showModule('books')">
+                <li class="list-group-item "  onclick="showModule('books')">
                     Quản lý sách
                 </li>  
                 <li class="list-group-item" onclick="showModule('orders')">

@@ -218,6 +218,7 @@ payOrderBtn.addEventListener("click", async () => {
             toast: true,
             position: "bottom-end",
             timer: 2000,
+            timerProgressBar:true,
             showConfirmButton: false
         });
 

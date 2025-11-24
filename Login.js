@@ -17,7 +17,8 @@ const LoginUser = async () => {
             title: "Login success",
             toast: true,
             position: "bottom-end",
-            timer: 2000,
+            timer: 1000,
+            timerProgressBar:true,
             showConfirmButton: false,
             willClose: () => {
                  if (role === "Admin") {
